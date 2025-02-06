@@ -87,18 +87,20 @@ def predict():
             "Do not include any additional information or explanations."
         )
 
+        # Create HTML-safe precautions
+        precautions_text = precautions.text.replace("\n", "<br>")
         result_text = f"The predicted crop disease is {class_name} with {confidence*100:.2f}% confidence.\n\nRecommended Precautions:"
 
         return jsonify({
             "predicted_class": class_name,
             "confidence": float(confidence),
-            "precautions": f"<p data-translate='{precautions.text}'>{precautions.text}</p>",
-            "result_html": create_result_html(result_text, precautions)
+            "precautions": precautions_text
         })
 
     except Exception as e:
         print(f"Error in prediction: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/predict_crop', methods=['POST'])
 def predict_crop():
@@ -110,29 +112,212 @@ def predict_crop():
             # Make prediction
             prediction = models['crop_model'].predict(input_data)
             crop_name = models['label_encoder'].inverse_transform(prediction)[0]
+
+            # Crop emoji mapping
+            CROP_EMOJI_MAPPING = {
+                'Rice': '🌾',
+                'Maize (Corn)': '🌽',
+                'Chickpea': '🫘',
+                'Kidney Beans': '🫘',
+                'Pigeon Peas': '🫘',
+                'Moth Beans': '🫘',
+                'Mung Bean': '🫘',
+                'Black Gram': '🫘',
+                'Lentil': '🫘',
+                'Pomegranate': '🍎',
+                'Banana': '🍌',
+                'Mango': '🥭',
+                'Grapes': '🍇',
+                'Watermelon': '🍉',
+                'Muskmelon': '🍈',
+                'Apple': '🍎',
+                'Orange': '🍊',
+                'Papaya': '🥭',
+                'Coconut': '🥥',
+                'Cotton': '🌱',
+                'Jute': '🪢',
+                'Coffee': '☕'
+            }
+
+            # Amazon links for each crop
+            CROP_LINKS = {
+                'Rice': [
+                    ('Seeds', 'https://www.amazon.in/s?k=rice+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=rice+fertilizer'),
+                    ('Harvesting Tools', 'https://www.amazon.in/s?k=rice+harvesting+tools')
+                ],
+                'Maize (Corn)': [
+                    ('Seeds', 'https://www.amazon.in/s?k=maize+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=corn+fertilizer'),
+                    ('Planter', 'https://www.amazon.in/s?k=corn+planter+machine')
+                ],
+                'Chickpea': [
+                    ('Seeds', 'https://www.amazon.in/s?k=chickpea+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=chickpea+fertilizer'),
+                    ('Harvester', 'https://www.amazon.in/s?k=chickpea+harvester')
+                ],
+                'Kidney Beans': [
+                    ('Seeds', 'https://www.amazon.in/s?k=kidney+beans+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=kidney+beans+fertilizer'),
+                    ('Storage', 'https://www.amazon.in/s?k=bean+storage+containers')
+                ],
+                'Pigeon Peas': [
+                    ('Seeds', 'https://www.amazon.in/s?k=pigeon+peas+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=pigeon+peas+fertilizer'),
+                    ('Processing', 'https://www.amazon.in/s?k=pulse+processing+machine')
+                ],
+                'Moth Beans': [
+                    ('Seeds', 'https://www.amazon.in/s?k=moth+beans+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=moth+beans+fertilizer'),
+                    ('Sprouting Kit', 'https://www.amazon.in/s?k=bean+sprouting+kit')
+                ],
+                'Mung Bean': [
+                    ('Seeds', 'https://www.amazon.in/s?k=mung+bean+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=mung+bean+fertilizer'),
+                    ('Sprouters', 'https://www.amazon.in/s?k=sprouting+kits')
+                ],
+                'Black Gram': [
+                    ('Seeds', 'https://www.amazon.in/s?k=black+gram+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=black+gram+fertilizer'),
+                    ('Harvester', 'https://www.amazon.in/s?k=gram+harvesting+machine')
+                ],
+                'Lentil': [
+                    ('Seeds', 'https://www.amazon.in/s?k=lentil+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=lentil+fertilizer'),
+                    ('Processing', 'https://www.amazon.in/s?k=lentil+processing+machine')
+                ],
+                'Pomegranate': [
+                    ('Plants', 'https://www.amazon.in/s?k=pomegranate+plants'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=pomegranate+fertilizer'),
+                    ('Juicer', 'https://www.amazon.in/s?k=pomegranate+juicer')
+                ],
+                'Banana': [
+                    ('Plants', 'https://www.amazon.in/s?k=banana+plants'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=banana+fertilizer'),
+                    ('Harvesting Knife', 'https://www.amazon.in/s?k=banana+harvesting+knife')
+                ],
+                'Mango': [
+                    ('Plants', 'https://www.amazon.in/s?k=mango+plants'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=mango+fertilizer'),
+                    ('Grafting Tool', 'https://www.amazon.in/s?k=mango+grafting+tool')
+                ],
+                'Grapes': [
+                    ('Vines', 'https://www.amazon.in/s?k=grape+vines'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=grape+fertilizer'),
+                    ('Wine Making', 'https://www.amazon.in/s?k=wine+making+kit')
+                ],
+                'Watermelon': [
+                    ('Seeds', 'https://www.amazon.in/s?k=watermelon+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=watermelon+fertilizer'),
+                    ('Seed Spitter', 'https://www.amazon.in/s?k=watermelon+seed+spitter')
+                ],
+                'Muskmelon': [
+                    ('Seeds', 'https://www.amazon.in/s?k=muskmelon+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=muskmelon+fertilizer'),
+                    ('Trellis', 'https://www.amazon.in/s?k=melon+trellis')
+                ],
+                'Apple': [
+                    ('Trees', 'https://www.amazon.in/s?k=apple+trees'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=apple+tree+fertilizer'),
+                    ('Picker', 'https://www.amazon.in/s?k=fruit+picker')
+                ],
+                'Orange': [
+                    ('Trees', 'https://www.amazon.in/s?k=orange+trees'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=orange+tree+fertilizer'),
+                    ('Juicer', 'https://www.amazon.in/s?k=orange+juicer')
+                ],
+                'Papaya': [
+                    ('Seeds', 'https://www.amazon.in/s?k=papaya+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=papaya+fertilizer'),
+                    ('Ripening Cover', 'https://www.amazon.in/s?k=fruit+ripening+cover')
+                ],
+                'Coconut': [
+                    ('Seedlings', 'https://www.amazon.in/s?k=coconut+seedlings'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=coconut+fertilizer'),
+                    ('Climber', 'https://www.amazon.in/s?k=coconut+tree+climber')
+                ],
+                'Cotton': [
+                    ('Seeds', 'https://www.amazon.in/s?k=cotton+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=cotton+fertilizer'),
+                    ('Ginning', 'https://www.amazon.in/s?k=cotton+ginning+machine')
+                ],
+                'Jute': [
+                    ('Seeds', 'https://www.amazon.in/s?k=jute+seeds'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=jute+fertilizer'),
+                    ('Processing', 'https://www.amazon.in/s?k=jute+processing+machine')
+                ],
+                'Coffee': [
+                    ('Plants', 'https://www.amazon.in/s?k=coffee+plants'),
+                    ('Fertilizer', 'https://www.amazon.in/s?k=coffee+fertilizer'),
+                    ('Grinder', 'https://www.amazon.in/s?k=coffee+grinder')
+                ]
+            }
+
+            DEFAULT_LINKS = [
+                ('Seeds', 'https://www.amazon.in/s?k=agriculture+seeds'),
+                ('Fertilizer', 'https://www.amazon.in/s?k=organic+fertilizer'),
+                ('Tools', 'https://www.amazon.in/s?k=farming+tools')
+            ]
+
+            # Get resources
+            emoji = CROP_EMOJI_MAPPING.get(crop_name, '🌱')
+            amazon_links = CROP_LINKS.get(crop_name, DEFAULT_LINKS)
             
+            # Format prediction
+            prediction_text = f"{emoji} Recommended Crop: {crop_name} {emoji}"
+
             return render_template(
-                'crop-recommendation.html', 
-                prediction_text=format_crop_prediction(crop_name)
+                'crop-recommendation.html',
+                prediction_text=prediction_text,
+                amazon_links=amazon_links,
+                crop_emoji=emoji
             )
         except Exception as e:
-            return render_template('crop-recommendation.html', 
+            return render_template('crop-recommendation.html',
                                 prediction_text=f"Error: {str(e)}")
 
 @app.route('/fertilizer', methods=['GET', 'POST'])
 def fertilizer():
     if request.method == 'POST':
         try:
+            FERTILIZER_NAMES = {
+                0: "Urea",
+                1: "DAP",
+                2: "MOP",
+                3: "Complex",
+                4: "SSP",
+                5: "Ammonium Sulphate",
+                6: "Gypsum"
+            }
+
+            FERTILIZER_LINKS = {
+                "Urea": "https://www.amazon.in/s?k=urea+fertilizer",
+                "DAP": "https://www.amazon.in/s?k=dap+fertilizer",
+                "MOP": "https://www.amazon.in/s?k=potash+fertilizer",
+                "Complex": "https://www.amazon.in/s?k=npk+fertilizer",
+                "SSP": "https://www.amazon.in/s?k=ssp+fertilizer",
+                "Ammonium Sulphate": "https://www.amazon.in/s?k=ammonium+sulphate",
+                "Gypsum": "https://www.amazon.in/s?k=gypsum+fertilizer",
+                "Organic": "https://www.amazon.in/s?k=organic+fertilizer"
+            }
+
             # Process input data
             input_features = get_fertilizer_input_data(request.form)
             input_scaled = models['scaler'].transform(input_features)
             
             # Make prediction
             prediction = models['fertilizer_model'].predict(input_scaled)[0]
-            fertilizer = FERTILIZER_NAMES.get(prediction, "Unknown")
+            fertilizer_name = FERTILIZER_NAMES.get(prediction, "Unknown")
             
+            # Get Amazon link
+            amazon_link = FERTILIZER_LINKS.get(
+                fertilizer_name, 
+                "https://www.amazon.in/s?k=agriculture+fertilizer"
+            )
+
             return render_template('fertilizer-recommendation.html', 
-                                result=f'Recommended Fertilizer: {fertilizer}')
+                                result=f'Recommended Fertilizer: {fertilizer_name}',
+                                amazon_link=amazon_link)
         except Exception as e:
             return render_template('fertilizer-recommendation.html', 
                                 result=f'Error: {str(e)}')

@@ -78,4 +78,4 @@ This project uses Python 11 and manages dependencies through Miniconda. Follow t
 
 ## Contact
 
-fk955070@gmail.com
+[Add your contact information here]

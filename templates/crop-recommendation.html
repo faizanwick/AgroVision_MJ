@@ -1,105 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="Crop Recommendation - AgroVision">Crop Recommendation - AgroVision</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-translate="Crop Recommendation - AgroVision">
+      Crop Recommendation - AgroVision
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons.min.js"></script>
-</head>
+  </head>
 
-<body class="bg-gradient-to-br from-gray-900 to-green-900 text-white min-h-screen pt-16">
-
+  <body
+    class="bg-gradient-to-br from-gray-900 to-green-900 text-white min-h-screen pt-16"
+  >
     <!-- <body class="bg-gradient-to-br from-gray-900 to-green-900 text-white min-h-screen flex items-center justify-center"> -->
-    <nav class="bg-white/10 backdrop-blur-lg border-b border-white/10 fixed w-full top-0 left-0 z-10">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <a href="/" class="text-green-400 hover:text-green-300 transition-colors text-xl font-bold"
-                    data-translate="AgroVision">AgroVision</a>
-                <div class="flex space-x-8">
-                    <a href="/chat" class="text-green-400 hover:text-green-300 transition-colors"
-                        data-translate="Ask Chatbot">Ask Chatbot</a>
-                    <a href="/cropdisease" class="text-green-400 hover:text-green-300 transition-colors"
-                        data-translate="Crop Disease">Crop
-                        Disease</a>
-                    <a href="/croprecommendation" class="text-green-400 hover:text-green-300 transition-colors"
-                        data-translate="Crop Recommendation">Crop
-                        Recommendation</a>
-                    <a href="/fertilizerrecommendation" class="text-green-400 hover:text-green-300 transition-colors"
-                        data-translate="Fertilizer Guide">Fertilizer Guide</a>
-                </div>
-            </div>
+    <nav
+      class="bg-white/10 backdrop-blur-lg border-b border-white/10 fixed w-full top-0 left-0 z-10"
+    >
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <a
+            href="/"
+            class="text-green-400 hover:text-green-300 transition-colors text-xl font-bold"
+            data-translate="AgroVision"
+            >AgroVision</a
+          >
+          <div class="flex space-x-8">
+            <a
+              href="/chat"
+              class="text-green-400 hover:text-green-300 transition-colors"
+              data-translate="Ask Chatbot"
+              >Ask Chatbot</a
+            >
+            <a
+              href="/cropdisease"
+              class="text-green-400 hover:text-green-300 transition-colors"
+              data-translate="Crop Disease"
+              >Crop Disease</a
+            >
+            <a
+              href="/croprecommendation"
+              class="text-green-400 hover:text-green-300 transition-colors"
+              data-translate="Crop Recommendation"
+              >Crop Recommendation</a
+            >
+            <a
+              href="/fertilizerrecommendation"
+              class="text-green-400 hover:text-green-300 transition-colors"
+              data-translate="Fertilizer Guide"
+              >Fertilizer Guide</a
+            >
+          </div>
         </div>
+      </div>
     </nav>
     <div
-        class="container mx-auto max-w-lg p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/10">
-        <div class="flex items-center justify-between mb-6">
+      class="container mx-auto max-w-lg p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/10"
+    >
+      <div class="flex items-center justify-between mb-6">
+        <h1
+          class="text-3xl font-bold text-green-400"
+          data-translate="Crop Recommendation"
+        >
+          Crop Recommendation
+        </h1>
+      </div>
 
-            <h1 class="text-3xl font-bold text-green-400" data-translate="Crop Recommendation">Crop Recommendation</h1>
+      <p
+        class="text-gray-300 mb-8"
+        data-translate="Find the best crops for your land based on soil, weather, and environmental conditions."
+      >
+        Find the best crops for your land based on soil, weather, and
+        environmental conditions.
+      </p>
+
+      <form
+        action="/predict_crop"
+        id="cropRecommendationForm"
+        class="space-y-4"
+        method="POST"
+      >
+        <div class="flex flex-col">
+          <label
+            for="nitrogen"
+            class="text-gray-400 mb-2"
+            data-translate="Nitrogen (N)"
+            >Nitrogen (N)</label
+          >
+          <input
+            type="number"
+            id="nitrogen"
+            placeholder="Enter nitrogen value"
+            name="nitrogen"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
         </div>
 
-        <p class="text-gray-300 mb-8"
-            data-translate="Find the best crops for your land based on soil, weather, and environmental conditions.">
-            Find the best crops for your land based on soil, weather, and environmental conditions.
-        </p>
+        <div class="flex flex-col">
+          <label
+            for="phosphorus"
+            class="text-gray-400 mb-2"
+            data-translate="Phosphorus (P)"
+            >Phosphorus (P)</label
+          >
+          <input
+            type="number"
+            id="phosphorus"
+            placeholder="Enter phosphorus value"
+            name="phosphorus"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
 
-        <form action="/predict_crop" id="cropRecommendationForm" class="space-y-4" method="POST">
-            <div class="flex flex-col">
-                <label for="nitrogen" class="text-gray-400 mb-2" data-translate="Nitrogen (N)">Nitrogen (N)</label>
-                <input type="number" id="nitrogen" placeholder="Enter nitrogen value" name="nitrogen"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+        <div class="flex flex-col">
+          <label
+            for="potassium"
+            class="text-gray-400 mb-2"
+            data-translate="Potassium (K)"
+            >Potassium (K)</label
+          >
+          <input
+            type="number"
+            id="potassium"
+            placeholder="Enter potassium value"
+            name="potassium"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
+        <div class="flex flex-col">
+          <label for="temperature" class="text-gray-400 mb-2" data-translate=""
+            >Temperature (°C)</label
+          >
+          <input
+            type="number"
+            id="temperature"
+            placeholder="Enter temperature"
+            name="temperature"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
+        <div class="flex flex-col">
+          <label
+            for="humidity"
+            class="text-gray-400 mb-2"
+            data-translate="Humidity (%)"
+            >Humidity (%)</label
+          >
+          <input
+            type="number"
+            id="humidity"
+            placeholder="Enter humidity percentage"
+            name="humidity"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
+        <div class="flex flex-col">
+          <label
+            for="soil-ph"
+            class="text-gray-400 mb-2"
+            data-translate="Soil pH"
+            >Soil pH</label
+          >
+          <input
+            type="number"
+            id="soil-ph"
+            placeholder="Enter soil pH"
+            name="ph"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
+        <div class="flex flex-col">
+          <label
+            for="rainfall"
+            class="text-gray-400 mb-2"
+            data-translate="Rainfall (mm)"
+            >Rainfall (mm)</label
+          >
+          <input
+            type="number"
+            id="rainfall"
+            placeholder="Enter rainfall"
+            name="rainfall"
+            class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          data-translate="Submit"
+        >
+          Submit
+        </button>
+      </form>
+      {% if prediction_text %}
+      <div class="mt-6 p-6 bg-gray-700/50 rounded-xl">
+        <div class="text-center">
+          <div class="text-6xl mb-4 animate-bounce">{{ crop_emoji }}</div>
+          <h2 class="text-2xl font-bold text-green-400 mb-4">
+            {{ prediction_text }}
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          {% for link in amazon_links %}
+          <a
+            href="{{ link[1] }}"
+            target="_blank"
+            class="group flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-all"
+          >
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <i
+                  data-lucide="{% if 'seed' in link[0].lower() %}leaf{% elif 'fert' in link[0].lower() %}flask-conical{% else %}tool{% endif %}"
+                  class="w-5 h-5 mr-2 text-green-400"
+                ></i>
+                <span class="font-medium">{{ link[0] }}</span>
+              </div>
+              <span class="text-sm text-gray-400 group-hover:text-green-300">
+                View on Amazon ↗
+              </span>
             </div>
-
-            <div class="flex flex-col">
-                <label for="phosphorus" class="text-gray-400 mb-2" data-translate="Phosphorus (P)">Phosphorus
-                    (P)</label>
-                <input type="number" id="phosphorus" placeholder="Enter phosphorus value" name="phosphorus"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <div class="flex flex-col">
-                <label for="potassium" class="text-gray-400 mb-2" data-translate="Potassium (K)">Potassium (K)</label>
-                <input type="number" id="potassium" placeholder="Enter potassium value" name="potassium"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <div class="flex flex-col">
-                <label for="temperature" class="text-gray-400 mb-2" data-translate="">Temperature (°C)</label>
-                <input type="number" id="temperature" placeholder="Enter temperature" name="temperature"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <div class="flex flex-col">
-                <label for="humidity" class="text-gray-400 mb-2" data-translate="Humidity (%)">Humidity (%)</label>
-                <input type="number" id="humidity" placeholder="Enter humidity percentage" name="humidity"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <div class="flex flex-col">
-                <label for="soil-ph" class="text-gray-400 mb-2" data-translate="Soil pH">Soil pH</label>
-                <input type="number" id="soil-ph" placeholder="Enter soil pH" name="ph"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <div class="flex flex-col">
-                <label for="rainfall" class="text-gray-400 mb-2" data-translate="Rainfall (mm)">Rainfall (mm)</label>
-                <input type="number" id="rainfall" placeholder="Enter rainfall" name="rainfall"
-                    class="bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            </div>
-
-            <button type="submit"
-                class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-                data-translate="Submit">
-                Submit
-            </button>
-        </form>
-        <h2 data-translate="{{ prediction_text }}">{{ prediction_text }}</h2>
-
-        
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
     </div>
 
     <script src="/static/js/translation.js"></script>
-</body>
-
+  </body>
 </html>
